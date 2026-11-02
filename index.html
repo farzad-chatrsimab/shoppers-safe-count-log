@@ -280,6 +280,14 @@ input[type=time].in{text-align:left;padding-right:6px}
 dialog{padding:0;border:0;color:var(--ink);background:#fff;max-width:none;max-height:none}
 dialog::backdrop{background:rgba(18,22,44,.52);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
 .dlg{width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 48px);border-radius:18px;box-shadow:var(--sh-lg);flex-direction:column;overflow:hidden}
+.dlg.wide{width:min(660px,calc(100vw - 32px))}
+.dfl-grp{margin-top:14px}
+.dfl-grp h4{margin:0 0 4px;font-size:11.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--red)}
+.dfl-row{display:grid;grid-template-columns:minmax(0,1fr) 130px;gap:10px;align-items:center;padding:5px 0;border-top:1px solid var(--row)}
+.dfl-row.fl3{grid-template-columns:minmax(0,1fr) 70px 130px}
+.dfl-row .nm{display:flex;align-items:center;gap:8px;min-width:0;font-weight:600;font-size:13.5px}
+.dfl-row .nm .in{max-width:200px}
+.dfl-row .nm small{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;width:44px;flex:none}
 .dlg[open]{display:flex}
 .dlg-h{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 18px 14px 22px;border-bottom:1px solid var(--line)}
 .dlg-t{font-weight:800;font-size:18px;letter-spacing:-.015em}
@@ -487,12 +495,17 @@ dialog::backdrop{background:rgba(18,22,44,.52);-webkit-backdrop-filter:blur(3px)
   <div class="dlg-f"><button type="button" class="btn" data-act="import" data-ic="upload">Import backup</button><button type="button" class="btn" data-act="export" data-ic="download">Export backup</button></div>
 </dialog>
 
-<dialog class="dlg" id="dlg-settings" aria-label="Settings">
+<dialog class="dlg wide" id="dlg-settings" aria-label="Settings">
   <div class="dlg-h"><div><div class="dlg-t">Settings</div><div class="dlg-s">Saved in this browser on this computer</div></div><button type="button" class="xbtn" data-act="close" aria-label="Close" data-ic="x"></button></div>
   <div class="dlg-b">
     <div class="set-grid">
       <label class="fl"><span>Store number</span><input class="in text" data-sbind="storeNo" autocomplete="off" placeholder="e.g. 1234"><small>Shown in the header and on the printout.</small></label>
       <label class="fl"><span>Expected safe float</span><div class="field money"><span class="pre">$</span><input class="in" data-sbind="target" inputmode="decimal" autocomplete="off" placeholder="3,000.00"></div><small>Typed-in safe counts are checked against it.</small></label>    </div>
+    <div class="sect">
+      <div class="sect-t">Default prices &amp; floats</div>
+      <p>Every new day starts with these amounts. A day you've already started keeps its own — change that one with <b>Edit prices</b> on the day.</p>
+      <div id="defaults"></div>
+    </div>
     <div class="sect">
       <div class="sect-t">Your data</div>
       <p>Every day you fill in is saved automatically in this browser. Export a backup once in a while — it is also how you move your logs to another computer.</p>
@@ -680,20 +693,27 @@ let demo = false, curDate = todayISO(), log = null, C = null;
 const ui = {safeTab: 's1', edit: {}};
 let rerenderAfterChange = false;
 
+/* Default prices and floats for new days, kept in Settings. */
+const DEF_KEYS = ['active', 'stamps', 'other', 'transit'];
+function defaultsFrom(L) {
+  const d = {};
+  for (const k of DEF_KEYS) {
+    d[k] = {floats: {...L[k].floats}};
+    if (k !== 'active') d[k].rows = L[k].rows.map(({id, label, price}) => ({id, label, price}));
+  }
+  return d;
+}
+
 function newLog(date) {
   const L = template(); L.date = date;
-  L.safeMode = store.settings.safeMode || 'receipt';
-  const dates = Object.keys(store.logs).sort();
-  const src = dates.filter(d => d < date).pop() || dates.find(d => d > date);
-  const P = src && store.logs[src];
-  if (P) {
-    for (const k of INV) {
-      if (P[k]?.rows) L[k].rows = P[k].rows.map(r => ({...r, qty: null, amt: null}));
-      if (P[k]?.floats) L[k].floats = {...P[k].floats};
-    }
-    L.safeMode = P.safeMode || L.safeMode;
-    L.carriedFrom = src;
+  const D = store.settings.defaults;
+  if (D) for (const k of DEF_KEYS) {
+    if (D[k]?.floats) L[k].floats = {...D[k].floats};
+    if (D[k]?.rows) L[k].rows = L[k].rows.map(r => { const dr = D[k].rows.find(x => x.id === r.id); return dr ? {...r, label: dr.label, price: dr.price} : r; });
   }
+  L.safeMode = store.settings.safeMode || 'receipt';
+  const prev = Object.keys(store.logs).filter(d => d < date).sort().pop();
+  if (prev) { L.safeMode = store.logs[prev].safeMode || L.safeMode; L.carriedFrom = prev; }
   return L;
 }
 
@@ -994,7 +1014,7 @@ function cardStamps() {
 function cardTransit() {
   return `<section class="card" id="sec-transit" data-sec="transit">
     ${cardHead('bus', 'Transit', 'Tickets, passes and cards on hand')}
-    <div class="card-b">${invPanel('transit', {title: 'Transit', sub: 'Set unit prices once with “Edit prices”, or type amounts directly', edit: true, wide: true})}</div>
+    <div class="card-b">${invPanel('transit', {title: 'Transit', sub: 'Set default prices in Settings, or type amounts directly', edit: true, wide: true})}</div>
   </section>`;
 }
 
@@ -1019,7 +1039,7 @@ function noticeHTML() {
   if (store.logs[curDate]) return '';
   const src = log.carriedFrom;
   const msg = src
-    ? `<b>New day.</b> Prices and floats are copied from ${fmtShort(src)}` + (src < curDate ? ', and that day’s totals fill in “Previous total” for you.' : '.')
+    ? `<b>New day.</b> Prices and floats come from Settings, and the ${fmtShort(src)} totals fill in “Previous total” for you.`
     : `<b>Welcome!</b> Type in the day’s counts — every total, assumed sale and variance is worked out for you and saved in this browser. When you’re done, press <b>Preview &amp; Print</b>.`;
   return `<div class="notice">${IC.info}<div>${msg}</div></div>`;
 }
@@ -1324,7 +1344,26 @@ function renderHistory() {
 function openSettings() {
   $('[data-sbind="storeNo"]').value = store.settings.storeNo || '';
   $('[data-sbind="target"]').value = moneyEdit(store.settings.target ?? 0);
+  renderDefaults();
   $('#dlg-settings').showModal();
+}
+
+function renderDefaults() {
+  const D = store.settings.defaults, T = template();
+  const price = (b, label) => `<div class="field money"><span class="pre">$</span><input class="in" data-dbind="${b}" data-kind="money" inputmode="decimal" autocomplete="off" placeholder="No price" aria-label="${esc(label)}"></div>`;
+  const tag = {t: 'Ticket', p: 'Pass'};
+  const row = (k, r, i) => {
+    const t = T[k].rows.find(x => x.id === r.id) || {};
+    const name = t.lock ? `<span>${esc(r.label)}</span>` : `<input class="in text sm" data-dbind="${k}.rows.${i}.label" data-kind="text" autocomplete="off" placeholder="Name" aria-label="Item name">`;
+    return `<div class="dfl-row"><div class="nm">${tag[t.grp] ? `<small>${tag[t.grp]}</small>` : ''}${name}</div>${price(`${k}.rows.${i}.price`, `${r.label || 'Item'} price`)}</div>`;
+  };
+  const floats = k => `<div class="dfl-row fl3"><div class="nm">Floats</div><input class="in" data-dbind="${k}.floats.n" data-kind="count" inputmode="numeric" autocomplete="off" aria-label="Number of floats">${price(`${k}.floats.amt`, 'Floats total')}</div>`;
+  const grp = (title, k) => `<div class="dfl-grp"><h4>${title}</h4>${(D[k].rows || []).map((r, i) => row(k, r, i)).join('')}${floats(k)}</div>`;
+  $('#defaults').innerHTML = grp('Active Offline Lottery', 'active') + grp('Stamps', 'stamps') + grp('Other', 'other') + grp('Transit', 'transit');
+  for (const el of $$('#defaults [data-dbind]')) {
+    const v = get(D, el.dataset.dbind);
+    el.value = v == null ? '' : el.dataset.kind === 'money' ? moneyEdit(v) : String(v);
+  }
 }
 
 function exportBackup() {
@@ -1398,6 +1437,17 @@ document.addEventListener('input', e => {
     }
     scheduleSave();
     refresh();
+    return;
+  }
+  if (el.matches('[data-dbind]')) {
+    const kind = el.dataset.kind;
+    const v = kind === 'text' ? el.value : kind === 'count' ? parseCount(el.value) : parseMoney(el.value);
+    if (Number.isNaN(v)) { el.classList.add('invalid'); return; }
+    el.classList.remove('invalid');
+    set(store.settings.defaults, el.dataset.dbind, v);
+    /* A day that hasn't been started yet picks the new defaults up straight away. */
+    if (!store.logs[curDate]) { log = newLog(curDate); render(); }
+    scheduleSave();
     return;
   }
   if (!el.matches('#content [data-bind]')) return;
@@ -1585,6 +1635,10 @@ function init() {
 
   if (demo) { store = demoStore(); curDate = '2026-11-01'; $('#demo-banner').hidden = false; }
   else loadStore();
+  if (!store.settings.defaults) {
+    const latest = Object.keys(store.logs).sort().pop();
+    store.settings.defaults = defaultsFrom(latest ? store.logs[latest] : template());
+  }
   if (/^\d{4}-\d{2}-\d{2}$/.test(params.get('date') || '')) curDate = params.get('date');
   $('#store-tag').textContent = store.settings.storeNo ? ` · Store #${store.settings.storeNo}` : '';
 
