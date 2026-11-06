@@ -4,7 +4,17 @@ A small web app for filling in the store's daily **Safe Count Log**. You type in
 
 **Open the app:** https://farzad-chatrsimab.github.io/shoppers-safe-count-log/
 
-Nothing to install. It runs in Chrome or Edge, and the whole app is a single file (`index.html`).
+Nothing to install. It runs in Chrome or Edge, and you can also install it as an app (see below).
+
+## Install it as an app
+
+The Safe Count Log is a Progressive Web App, so it can be installed and works offline once it has been opened.
+
+- **Chrome or Edge on a computer:** open the link and click **Install app** in the top bar (or the install icon at the right of the address bar).
+- **iPhone or iPad (Safari):** tap Share → **Add to Home Screen**.
+- **Android (Chrome):** tap ⋮ → **Install app**.
+
+It then opens in its own window, with its own icon, like any other program. Saved days are shared between the installed app and the same browser.
 
 ## What it does
 
@@ -42,4 +52,10 @@ Settings → **Open the demo** loads sample numbers so you can see a filled-in d
 
 ## Updating
 
-The site is served by GitHub Pages from `index.html` on the `main` branch. Replace that file and push, and the link updates within a minute or two. Saved days are not affected.
+The site is served by GitHub Pages from the `main` branch:
+
+- `index.html` is the app; `manifest.webmanifest` and `sw.js` make it installable and offline-ready; `assets/` holds the logo and icons.
+- Push a change and the link updates within a minute or two. The app always checks for a newer `index.html` when it's online.
+- If you replace a file in `assets/`, also bump `VERSION` in `sw.js` so installed copies pick it up.
+
+Saved days are not affected by updates.

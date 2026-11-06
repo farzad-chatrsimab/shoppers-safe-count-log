@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Safe Count Log</title>
 <meta name="description" content="Enter the day's counts, let the app do the math, and print the finished Safe Count Log on one page.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23CB333B'/%3E%3Crect x='7' y='7.5' width='18' height='16' rx='2.5' fill='none' stroke='white' stroke-width='2.2'/%3E%3Ccircle cx='16' cy='15.5' r='3.5' fill='none' stroke='white' stroke-width='2.2'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#CB333B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Safe Count Log">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800;900&display=swap">
@@ -39,7 +44,10 @@ h2{margin:0;font:inherit}
 .appbar{background:var(--red);background-image:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.05));color:#fff}
 .appbar-in{max-width:1480px;margin:0 auto;padding:10px 24px;min-height:64px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:12px;min-width:0;flex:1 1 0}
-.brand-mark{width:40px;height:40px;border-radius:11px;background:#fff;color:var(--red);display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.14);flex:none}
+.brand-logo{flex:none;display:flex;align-items:center;height:42px;padding:0 12px;border-radius:11px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.14)}
+.brand-logo img{display:block;height:26px;width:auto}
+.brand-txt{min-width:0;padding-left:14px;border-left:1px solid rgba(255,255,255,.32)}
+@media (max-width:560px){.brand-logo img{height:20px}.brand-txt{display:none}}
 .brand-title{font-weight:800;font-size:17px;letter-spacing:-.015em;line-height:1.15}
 .brand-sub{font-size:12.5px;font-weight:500;opacity:.88;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .datebar{display:flex;align-items:center;gap:6px;flex:none}
@@ -362,8 +370,7 @@ dialog::backdrop{background:rgba(18,22,44,.52);-webkit-backdrop-filter:blur(3px)
 .sheet .sh-date .fv{font-size:10pt}
 .sheet .sh-title{font-size:18pt;font-weight:800;letter-spacing:-.01em;line-height:1;padding-bottom:3pt}
 .sheet .sh-brand{justify-self:end;text-align:right;line-height:1;padding-bottom:2pt}
-.sheet .sh-brand .w1{font-size:15pt;font-weight:900;letter-spacing:.02em}
-.sheet .sh-brand .w2{font-size:6.6pt;font-weight:800;letter-spacing:.36em;margin-top:2pt;margin-right:-.36em}
+.sheet .sh-brand img{display:block;height:.4in;width:auto}
 .sheet .tbl{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1.13fr;border:1.2pt solid #000}
 .sheet .tbl.t-top{flex:none;height:3.06in;--rh:11.8pt;--rmax:13pt}
 .sheet .tbl.t-bot{flex:1;min-height:0;border-top:0}
@@ -441,10 +448,10 @@ dialog::backdrop{background:rgba(18,22,44,.52);-webkit-backdrop-filter:blur(3px)
   <header class="appbar">
     <div class="appbar-in">
       <div class="brand">
-        <div class="brand-mark" id="brand-mark"></div>
-        <div style="min-width:0">
+        <div class="brand-logo"><img src="assets/logo.png" alt="Shoppers Drug Mart" width="900" height="162"></div>
+        <div class="brand-txt">
           <div class="brand-title">Safe Count Log</div>
-          <div class="brand-sub">Shoppers Drug Mart<span id="store-tag"></span></div>
+          <div class="brand-sub">Safe &amp; deposit records<span id="store-tag"></span></div>
         </div>
       </div>
       <div class="datebar">
@@ -458,6 +465,7 @@ dialog::backdrop{background:rgba(18,22,44,.52);-webkit-backdrop-filter:blur(3px)
       </div>
       <div class="actions">
         <span class="save-state" id="save-state" role="status"></span>
+        <button type="button" class="btn bar" data-act="install" id="install-btn" hidden><span class="t">Install app</span></button>
         <button type="button" class="btn bar" data-act="history" id="hist-btn"><span class="t">History</span></button>
         <button type="button" class="btn bar" data-act="settings" id="set-btn"><span class="t">Settings</span></button>
         <button type="button" class="btn white" data-act="preview" id="print-btn">Preview &amp; Print</button>
@@ -1268,7 +1276,7 @@ function sheetHTML(L, c) {
     <div class="sh-head">
       <div class="sh-date"><span>Date:</span><span class="dv">${fv(fmtForm(L.date))}</span></div>
       <div class="sh-title">Safe Count Log</div>
-      <div class="sh-brand"><div class="w1">SHOPPERS</div><div class="w2">DRUG MART</div></div>
+      <div class="sh-brand"><img src="assets/logo.png" alt="Shoppers Drug Mart"></div>
     </div>
     <div class="tbl t-top">${SAFE_KEYS.map(safeCol).join('')}${depCol}</div>
     <div class="tbl t-bot">${activeCol}${inactiveCol}${stampsCol}${transitCol}${lastCol}</div>
@@ -1560,6 +1568,9 @@ document.addEventListener('click', e => {
         renderHistory(); toast('Day deleted');
       }
       break;
+    case 'install':
+      if (installPrompt) { installPrompt.prompt(); installPrompt.userChoice.finally(() => { installPrompt = null; $('#install-btn').hidden = true; }); }
+      break;
     case 'export': exportBackup(); break;
     case 'import': $('#import-file').click(); break;
     case 'wipe':
@@ -1621,7 +1632,6 @@ function demoStore() {
 function init() {
   const params = new URLSearchParams(location.search);
   demo = params.has('demo');
-  $('#brand-mark').innerHTML = IC.safe;
   $('#prev-btn').innerHTML = IC.chevL;
   $('#next-btn').innerHTML = IC.chevR;
   $('#date-ic').innerHTML = IC.calendar;
@@ -1629,6 +1639,7 @@ function init() {
   $('#hist-btn').insertAdjacentHTML('afterbegin', IC.history);
   $('#set-btn').insertAdjacentHTML('afterbegin', IC.settings);
   $('#print-btn').insertAdjacentHTML('afterbegin', IC.printer);
+  $('#install-btn').insertAdjacentHTML('afterbegin', IC.download);
   for (const el of $$('[data-ic]')) el.insertAdjacentHTML('afterbegin', IC[el.dataset.ic]);
   $('#secnav').innerHTML = NAV.map(([k, t]) => `<button type="button" class="pill" data-act="nav" data-k="${k}"><span class="dot"></span>${esc(t)}</button>`).join('');
   $('#summary').innerHTML = summaryHTML();
@@ -1650,7 +1661,13 @@ function init() {
   /* Load the print fonts now so they are ready when the print dialog opens. */
   if (document.fonts?.load) for (const f of ['500 10px "IBM Plex Mono"', '600 10px "IBM Plex Mono"', '800 10px Inter', '900 10px Inter']) document.fonts.load(f).catch(() => {});
   if (params.has('preview')) (document.fonts ? document.fonts.ready : Promise.resolve()).then(openPreview);
+
+  /* Installable app: an offline worker, plus an Install button wherever the browser offers one. */
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; $('#install-btn').hidden = false; });
+  window.addEventListener('appinstalled', () => { installPrompt = null; $('#install-btn').hidden = true; toast('Installed — open it from your apps'); });
 }
+let installPrompt = null;
 init();
 })();
 </script>
