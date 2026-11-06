@@ -389,22 +389,27 @@ dialog::backdrop{background:rgba(18,22,44,.52);-webkit-backdrop-filter:blur(3px)
 .sheet .th,.sheet .pr{display:grid;grid-template-columns:var(--qw) minmax(0,1fr) var(--aw)}
 .sheet .th{flex:none;padding-bottom:1.8pt;border-bottom:.8pt solid #000;font-size:5.6pt;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#4A4A4A;line-height:1}
 .sheet .th>span:first-child{text-align:center}
-.sheet .th>span:nth-child(2){padding-left:4pt}
+.sheet .th>span:nth-child(2){padding-left:5pt}
 .sheet .th>span.num{text-align:right;padding-right:7pt}
-.sheet .th>span:last-child{text-align:right;padding-right:3pt}
+.sheet .th>span.split{display:flex;justify-content:space-between;padding-right:5pt}
+.sheet .th>span:last-child{text-align:right;padding-right:4pt}
 .sheet .pr+.th{margin-top:6pt}
 .sheet .pr{flex:1 0 var(--rh);min-height:var(--rh);max-height:var(--rmax);border-bottom:.45pt solid var(--rule)}
 .sheet .pr>span,.sheet .sr>span{display:flex;align-items:flex-end;min-width:0;padding-bottom:1.6pt;line-height:1;white-space:nowrap;overflow:hidden}
 .sheet .pq{justify-content:center;border-right:.45pt solid var(--rule)}
-.sheet .pd{font-weight:700;padding-left:4pt}
+.sheet .pd{font-weight:700;padding-left:5pt}
+.sheet .pd b{font-weight:700;overflow:hidden;padding-bottom:2pt;margin-bottom:-2pt}
 .sheet .pd.num{justify-content:flex-end;padding-right:7pt}
+.sheet .pd.split{justify-content:space-between;gap:4pt;padding-right:5pt}
+.sheet .pd i{flex:none;font-style:normal;font-family:var(--mono);font-size:7pt;font-weight:500;color:#555;letter-spacing:-.02em}
 .sheet .pd.wide{grid-column:1/3}
-.sheet .pv{justify-content:flex-end;padding-right:3pt;border-left:.45pt solid var(--rule)}
+.sheet .pv{justify-content:flex-end;padding-right:4pt;border-left:.45pt solid var(--rule)}
 /* totals: Label | Amount, lined up with the Amount column above */
 .sheet .sm{flex:none;border-top:.8pt solid #000}
 .sheet .sr{display:grid;grid-template-columns:minmax(0,1fr) var(--aw);height:var(--sh);border-bottom:.45pt solid var(--rule)}
 .sheet .sr>span:first-child{font-weight:700}
-.sheet .sr>span:last-child{justify-content:flex-end;padding-right:3pt;border-left:.45pt solid var(--rule)}
+.sheet .sr>span:last-child{justify-content:flex-end;padding-right:4pt;border-left:.45pt solid var(--rule)}
+.sheet .sr>span:first-child{padding-left:3pt}
 .sheet .sr.tot{background:#EDEDED}
 .sheet .sr.tot>span:first-child,.sheet .sr.var>span:first-child{font-weight:800}
 .sheet .sr.tot .fv{font-weight:600}
@@ -419,17 +424,16 @@ dialog::backdrop{background:rgba(18,22,44,.52);-webkit-backdrop-filter:blur(3px)
 .sheet .rbox{flex:1;margin:6pt 3pt 3pt;border:1pt dashed #9C9C9C;border-radius:5pt;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7pt;color:#8A8A8A;text-align:center;font-size:8pt;line-height:1.3}
 .sheet .rbox svg{width:24pt;height:24pt}
 /* deposit log */
-.sheet .dt{flex:none;display:grid;grid-template-columns:.72in minmax(0,1fr) var(--aw)}
-.sheet .dt>span{display:flex;align-items:flex-end;min-width:0;height:17pt;padding:0 3pt 1.6pt;border-bottom:.45pt solid var(--rule);line-height:1;white-space:nowrap;overflow:hidden}
-.sheet .dt>.h{height:auto;padding-bottom:1.8pt;border-bottom:.8pt solid #000;font-size:5.6pt;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#4A4A4A}
-.sheet .dt>.r{justify-content:flex-end}
-.sheet .dt>.k{flex-direction:column;align-items:flex-start;justify-content:flex-end;gap:1.5pt;padding-left:0;font-weight:700}
-.sheet .dt>.k small{font-size:5.8pt;font-weight:600;color:#555}
-.sheet .dt>.b,.sheet .dt>.a{border-left:.45pt solid var(--rule)}
-.sheet .dt>.a{justify-content:flex-end}
-.sheet .dt>.w{grid-column:2/4}
-.sheet .dt>.t{background:#EDEDED;font-weight:800}
-.sheet .sg2{flex:none;display:flex;flex-direction:column;margin-top:9pt}
+.sheet .dl{flex:none;margin-top:2pt;border-top:.8pt solid #000}
+.sheet .dr{display:grid;grid-template-columns:minmax(0,1fr) .95in;height:14.5pt;border-bottom:.45pt solid var(--rule)}
+.sheet .dr>span{display:flex;align-items:flex-end;min-width:0;padding-bottom:1.8pt;line-height:1;white-space:nowrap;overflow:hidden}
+.sheet .dr>span:first-child{font-weight:700;padding-left:3pt}
+.sheet .dr>span:last-child{justify-content:flex-end;padding:0 4pt 1.8pt 5pt;border-left:.45pt solid var(--rule)}
+.sheet .dr.grp{border-bottom:.8pt solid #000}
+.sheet .dr.tot{background:#EDEDED;border-top:.8pt solid #000}
+.sheet .dr.tot>span:first-child{font-weight:800}
+.sheet .dr.tot .fv{font-weight:600}
+.sheet .sg2{flex:none;display:flex;flex-direction:column;margin-top:7pt}
 .sheet .sg2>span:first-child{font-weight:700;line-height:1}
 .sheet .sg2>span:first-child small{font-weight:500;color:#555}
 .sheet .sg2>span:last-child{height:15pt;border-bottom:.6pt solid #000}
@@ -1216,8 +1220,9 @@ function sheetHTML(L, c) {
   const sg = v => v == null ? '' : signed(v);
   const pn = v => v == null ? '' : plain(v);
   const head = (t, sub) => `<div class="ph"><span>${t}</span>${sub ? `<small>(${sub})</small>` : ''}</div>`;
-  const TH = (item, num) => `<div class="th"><span>Qty</span><span${num ? ' class="num"' : ''}>${item}</span><span>Amount</span></div>`;
-  const R = (qty, label, val, num) => `<div class="pr"><span class="pq">${fv(qty)}</span><span class="pd${num ? ' num' : ''}">${esc(label)}</span><span class="pv">${fv(val)}</span></div>`;
+  const TH = (item, num, priced) => `<div class="th"><span>Qty</span><span${num ? ' class="num"' : priced ? ' class="split"' : ''}>${priced ? `<b>${item}</b><b>Price</b>` : item}</span><span>Amount</span></div>`;
+  const R = (qty, label, val, num, price) => `<div class="pr"><span class="pq">${fv(qty)}</span><span class="pd${num ? ' num' : ''}${price ? ' split' : ''}"><b>${esc(label)}</b>${price ? `<i>${price}</i>` : ''}</span><span class="pv">${fv(val)}</span></div>`;
+  const P = r => r.price != null ? (r.price / 100).toFixed(2) : '';
   const SR = (label, val, cls = '') => `<div class="sr${cls ? ' ' + cls : ''}"><span>${label}</span><span>${fv(val)}</span></div>`;
   const SIG = '<div class="sg"><span>Signature</span><span></span></div>';
   const floatRow = (S, num) => R(q(S.floats?.n), 'Floats', m(S.floats?.amt), num);
@@ -1235,13 +1240,12 @@ function sheetHTML(L, c) {
   };
 
   const D = L.deposit;
+  const DR = (label, val, cls = '') => `<div class="dr${cls ? ' ' + cls : ''}"><span>${label}</span><span>${fv(val)}</span></div>`;
   const depCol = `<div class="pc">${head('Daily Deposit Log')}<div class="pb">
-      <div class="dt">
-        <span class="h"></span><span class="h">Bag #</span><span class="h r">Amount</span>
-        <span class="k">Store</span><span class="b">${fv(D.bag1)}</span><span class="a">${fv(m$(D.amt1))}</span>
-        <span class="k">Post Office<small>if applicable</small></span><span class="b">${fv(D.bag2)}</span><span class="a">${fv(m$(D.amt2))}</span>
-        <span class="k t">Total</span><span class="b t"></span><span class="a t">${fv(m$(c.deposit.total))}</span>
-        <span class="k">Deposit Time</span><span class="b w">${fv(fmtTime(D.time))}</span>
+      <div class="dl">
+        ${DR('Store Bag #', D.bag1)}${DR('Store Amount', m$(D.amt1), 'grp')}
+        ${DR('Post Office Bag #', D.bag2)}${DR('Post Office Amount', m$(D.amt2))}
+        ${DR('Total Deposit', m$(c.deposit.total), 'tot')}${DR('Deposit Time', fmtTime(D.time))}
       </div>
       <div class="sp"></div>
       <div class="sg2"><span>Supervisor Signature</span><span></span></div>
@@ -1257,20 +1261,21 @@ function sheetHTML(L, c) {
       <div class="sm">${SR('Total', ci.has ? money$(ci.total) : '', 'tot')}${SR('Additions', m(I.additions))}${SR('Activations', m(I.activations))}${SR('Expected Total', ci.has ? m(ci.expected) : '')}${SR('Variance (+/−)', sg(ci.variance), 'var')}</div>${SIG}</div></div>`;
 
   const ST = L.stamps, cst = c.stamps;
-  const stampRows = ST.rows.map((r, i) => R(q(r.qty), (r.price != null ? (r.price / 100).toFixed(2) + ' ' : '') + r.label, m(cst.rows[i]))).join('');
-  const stampsCol = `<div class="pc">${head('Stamps')}<div class="pb">${TH('Booklet')}${stampRows}${floatRow(ST)}<div class="sp"></div>${salesFoot(ST, cst)}</div></div>`;
+  const stampRows = ST.rows.map((r, i) => R(q(r.qty), r.label, m(cst.rows[i]), false, P(r))).join('');
+  const stampsCol = `<div class="pc" style="--qw:.36in;--aw:.68in">${head('Stamps')}<div class="pb">${TH('Booklet', false, true)}${stampRows}${floatRow(ST)}<div class="sp"></div>${salesFoot(ST, cst)}</div></div>`;
 
   const T = L.transit, ct = c.transit;
-  const tRows = g => T.rows.map((r, i) => r.grp === g ? R(q(r.qty), r.label, m(ct.rows[i])) : '').join('');
-  const transitCol = `<div class="pc">${head('Transit')}<div class="pb">${TH('Tickets')}${tRows('t')}${TH('Passes')}${tRows('p')}${tRows('x')}${floatRow(T)}<div class="sp"></div>${salesFoot(T, ct)}</div></div>`;
+  /* A label that already carries its price, like "Cards ($4)", doesn't repeat it. */
+  const tRows = g => T.rows.map((r, i) => r.grp === g ? R(q(r.qty), r.label, m(ct.rows[i]), false, r.label.includes('$') ? '' : P(r)) : '').join('');
+  const transitCol = `<div class="pc" style="--qw:.36in;--aw:.68in">${head('Transit')}<div class="pb">${TH('Tickets', false, true)}${tRows('t')}${TH('Passes', false, true)}${tRows('p')}${tRows('x')}${floatRow(T)}<div class="sp"></div>${salesFoot(T, ct)}</div></div>`;
 
   /* "Other" sits under the coupons so every column ends with its totals at the same height. */
   const K = L.coupons, ck = c.coupons, O = L.other, co = c.other;
-  const otherRows = O.rows.map((r, i) => R(q(r.qty), r.label || (r.price != null ? money$(r.price) : ''), m(co.rows[i]))).join('');
+  const otherRows = O.rows.map((r, i) => R(q(r.qty), r.label || '', m(co.rows[i]), false, P(r))).join('');
   const lastCol = `<div class="pc">${head('$10 Shoppers Drug Mart Coupons')}
       <div class="pb fixed cp"><div class="sm">${SR('Previous Day Start', pn(ck.prev))}${SR('Additions', pn(K.additions))}${SR('Issued', pn(K.issued))}${SR('Assumed Total', ck.has ? pn(ck.assumed) : '')}${SR('Actual Total', pn(K.actual))}${SR('Variance (+/−)', ck.variance == null ? '' : plainSigned(ck.variance), 'var')}</div>${SIG}</div>
       <div class="band">Other</div>
-      <div class="pb">${TH('Item')}${otherRows}${floatRow(O)}<div class="sp"></div>${salesFoot(O, co)}</div></div>`;
+      <div class="pb" style="--qw:.3in;--aw:.62in">${TH('Item', false, true)}${otherRows}${floatRow(O)}<div class="sp"></div>${salesFoot(O, co)}</div></div>`;
 
   return `<div class="sheet">
     <div class="sh-head">
