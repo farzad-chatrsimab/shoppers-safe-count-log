@@ -289,13 +289,6 @@ dialog{padding:0;border:0;color:var(--ink);background:#fff;max-width:none;max-he
 dialog::backdrop{background:rgba(18,22,44,.52);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
 .dlg{width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 48px);border-radius:18px;box-shadow:var(--sh-lg);flex-direction:column;overflow:hidden}
 .dlg.wide{width:min(660px,calc(100vw - 32px))}
-.dfl-grp{margin-top:14px}
-.dfl-grp h4{margin:0 0 4px;font-size:11.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--red)}
-.dfl-row{display:grid;grid-template-columns:minmax(0,1fr) 130px;gap:10px;align-items:center;padding:5px 0;border-top:1px solid var(--row)}
-.dfl-row.fl3{grid-template-columns:minmax(0,1fr) 70px 130px}
-.dfl-row .nm{display:flex;align-items:center;gap:8px;min-width:0;font-weight:600;font-size:13.5px}
-.dfl-row .nm .in{max-width:200px}
-.dfl-row .nm small{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;width:44px;flex:none}
 .dlg[open]{display:flex}
 .dlg-h{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 18px 14px 22px;border-bottom:1px solid var(--line)}
 .dlg-t{font-weight:800;font-size:18px;letter-spacing:-.015em}
@@ -360,6 +353,117 @@ dialog::backdrop{background:rgba(18,22,44,.52);-webkit-backdrop-filter:blur(3px)
   .set-grid,.dep-f{grid-template-columns:1fr}
 }
 
+/* ============ Collapsible sections ============ */
+.card-x{display:grid;grid-template-rows:1fr;transition:grid-template-rows .38s cubic-bezier(.2,.7,.2,1)}
+.card-xi{overflow:hidden;min-height:0}
+.card.collapsed .card-x{grid-template-rows:0fr}
+.card-h[data-act]{cursor:pointer;user-select:none;border-radius:16px 16px 0 0;transition:background .15s,border-color .3s}
+.card-h[data-act]:hover{background:var(--soft)}
+.card-h[data-act]:focus-visible{outline:2px solid var(--red);outline-offset:-2px}
+.card.collapsed .card-h{border-bottom-color:transparent;border-radius:16px}
+.card .chev{flex:none;width:32px;height:32px;display:grid;place-items:center;border-radius:9px;color:var(--muted);transition:transform .35s cubic-bezier(.2,.7,.2,1),background .15s}
+.card-h:hover .chev{background:#EEF0F5;color:var(--ink)}
+.card.collapsed .chev{transform:rotate(-90deg)}
+.card .peek{display:none;align-items:center;gap:8px;flex:none;font-size:12.5px;font-weight:600;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap;animation:fade .3s both}
+.card.collapsed .peek{display:inline-flex}
+.card.nobody .chev{display:none}
+@media (max-width:700px){.card .peek{display:none!important}}
+.pill.ghost{margin-left:auto;background:transparent;border-color:transparent;color:var(--muted)}
+.pill.ghost:hover{background:#fff;border-color:var(--line)}
+.pill.ghost svg{width:15px;height:15px}
+
+/* ============ Motion ============ */
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes flash{0%{background-color:rgba(203,51,59,.16)}100%{background-color:transparent}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(203,51,59,.55)}70%{box-shadow:0 0 0 7px rgba(203,51,59,0)}100%{box-shadow:0 0 0 0 rgba(203,51,59,0)}}
+.enter>.card,.enter>.notice{animation:rise .55s cubic-bezier(.2,.7,.2,1) both}
+.enter>:nth-child(2){animation-delay:.05s}.enter>:nth-child(3){animation-delay:.1s}.enter>:nth-child(4){animation-delay:.15s}
+.enter>:nth-child(5){animation-delay:.2s}.enter>:nth-child(6){animation-delay:.25s}.enter>:nth-child(7){animation-delay:.3s}
+.summary{animation:rise .6s .1s cubic-bezier(.2,.7,.2,1) both}
+.badge{animation:pop .32s cubic-bezier(.3,1.5,.5,1) both}
+.flash{animation:flash .8s ease-out;border-radius:5px}
+.dot{transition:background .3s}
+.dot[data-s=bad]{animation:pulse 1.8s ease-out infinite}
+.panel{transition:box-shadow .2s,border-color .2s}
+.panel:hover{box-shadow:var(--sh);border-color:var(--line-2)}
+.btn.primary.lg{background-image:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);background-size:250% 100%;background-position:120% 0;transition:background-position .7s,background-color .15s}
+.btn.primary.lg:hover{background-position:-20% 0}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ============ Progress ring (day summary) ============ */
+.sum-top{display:flex;align-items:center;gap:14px}
+.sum-tl{flex:1;min-width:0}
+.prog-t{font-size:12px;opacity:.72;margin-top:3px}
+.ring{position:relative;width:58px;height:58px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:4.5}
+.ring .rt{stroke:rgba(255,255,255,.14)}
+.ring .rv{stroke:#fff;stroke-linecap:round;stroke-dasharray:113.1;stroke-dashoffset:113.1;transition:stroke-dashoffset .9s cubic-bezier(.2,.7,.2,1),stroke .4s}
+.ring.full .rv{stroke:#8FF0CA}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums}
+
+/* ============ Settings ============ */
+.dlg.set{width:min(880px,calc(100vw - 32px));height:min(660px,calc(100vh - 48px))}
+.set-body{flex:1;min-height:0;display:grid;grid-template-columns:200px minmax(0,1fr)}
+.set-nav{display:flex;flex-direction:column;gap:2px;padding:12px;background:var(--soft);border-right:1px solid var(--line);overflow:auto}
+.set-nav button{display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:var(--ink-2);font-weight:600;font-size:13.5px;text-align:left;white-space:nowrap;transition:background .15s,color .15s}
+.set-nav button svg{width:17px;height:17px;color:var(--muted);transition:color .15s}
+.set-nav button:hover{background:#EEF0F5;color:var(--ink)}
+.set-nav button.on{background:#fff;color:var(--ink);box-shadow:var(--sh)}
+.set-nav button.on svg{color:var(--red)}
+.set-main{padding:22px 26px 26px;overflow:auto;animation:fade .25s both}
+.st{margin:0 0 4px;font-size:18px;font-weight:800;letter-spacing:-.015em}
+.set-main>p{margin:0 0 16px;color:var(--muted);font-size:13px}
+@media (max-width:720px){.set-body{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}.set-nav{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}.set-nav button span{display:none}}
+.tbanner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;margin-bottom:16px;border-radius:10px;background:var(--warn-50);color:var(--warn);font-size:13px;font-weight:600}
+.tbanner.ok{background:var(--ok-50);color:var(--ok)}
+.tbanner svg{width:16px;height:16px;flex:none}
+.tbanner .link-btn{color:inherit;text-decoration:underline;padding:2px 4px}
+.igrid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.ilist{border:1px solid var(--line);border-radius:13px;padding:10px 12px 12px;background:#fff}
+.ilist-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.ilist-h h4{margin:0;font-size:11.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--red)}
+.cnt{font-size:11px;font-weight:700;color:var(--muted);background:#EEF0F5;border-radius:999px;padding:1px 8px}
+.irow{display:grid;grid-template-columns:18px minmax(0,1fr) 130px auto;gap:6px;align-items:center;padding:5px 0;border-top:1px solid var(--row);animation:rise .25s both}
+.irow .num{font-size:11px;font-weight:700;color:var(--faint);text-align:center}
+.iact{display:flex}
+.xbtn.sm{width:28px;height:28px;border-radius:7px}
+.xbtn.sm svg{width:15px;height:15px}
+.xbtn:disabled{opacity:.25;pointer-events:none}
+.iempty{padding:10px 0;color:var(--faint);font-size:13px;text-align:center;border-top:1px solid var(--row)}
+.add-btn{margin-top:8px;width:100%;height:34px;display:flex;align-items:center;justify-content:center;gap:6px;border:1.5px dashed var(--line-2);border-radius:9px;background:transparent;color:var(--red);font-weight:700;font-size:13px;transition:background .15s,border-color .15s}
+.add-btn:hover{background:var(--red-25);border-color:#E7B8BB}
+.add-btn svg{width:15px;height:15px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.lchip{display:inline-flex;align-items:center;gap:4px;height:36px;padding:0 6px 0 14px;border-radius:999px;border:1px solid var(--line);background:#fff;font-weight:800;font-variant-numeric:tabular-nums;box-shadow:var(--sh);animation:pop .3s cubic-bezier(.3,1.5,.5,1) both}
+.lchip button{width:26px;height:26px;border:0;border-radius:50%;background:transparent;color:var(--muted);display:grid;place-items:center}
+.lchip button:hover{background:var(--bad-50);color:var(--bad)}
+.lchip svg{width:13px;height:13px}
+.ladd{display:flex;gap:8px;max-width:340px}
+.ladd .field{flex:1}
+.frow{display:grid;grid-template-columns:minmax(0,1fr) 110px 160px;gap:12px;align-items:end;padding:12px 0;border-top:1px solid var(--row)}
+.frow .ft{font-weight:700;padding-bottom:10px}
+.about{text-align:center;padding:16px 0 4px}
+.about-ic{display:block;width:76px;height:76px;margin:0 auto 12px;border-radius:20px;box-shadow:var(--sh-lg)}
+.about-t{font-weight:800;font-size:21px;letter-spacing:-.015em}
+.about-v{color:var(--muted);font-size:13px;margin:2px 0 20px}
+.dev-card{display:inline-flex;align-items:center;gap:14px;padding:16px 22px;border-radius:16px;background:linear-gradient(135deg,#1A1F3C,#2D3462);color:#fff;text-align:left;box-shadow:var(--sh-lg);animation:pop .4s .1s cubic-bezier(.3,1.4,.5,1) both}
+.dev-av{width:46px;height:46px;border-radius:50%;background:var(--red);display:grid;place-items:center;font-weight:800;font-size:16px;letter-spacing:.02em;box-shadow:0 0 0 3px rgba(255,255,255,.15)}
+.dev-k{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.65}
+.dev-n{font-size:18px;font-weight:800;letter-spacing:-.01em}
+.about p{max-width:400px;margin:20px auto 0;color:var(--muted);font-size:13px}
+
+/* ============ Developer credit ============ */
+.credit{background:#fff;border-top:1px solid var(--line)}
+.credit-in{max-width:1480px;margin:0 auto;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.credit-l{display:flex;align-items:center;gap:10px}
+.credit-l img{width:26px;height:26px;border-radius:7px;box-shadow:var(--sh)}
+.credit b{color:var(--ink)}
+.credit .ver{font-size:11px;font-weight:700;background:#EEF0F5;border-radius:999px;padding:2px 8px;margin-left:6px}
+.credit-r b{background:linear-gradient(90deg,var(--red),#E86A71);-webkit-background-clip:text;background-clip:text;color:transparent}
+
 /* ============ Printed form (Letter, landscape) ============ */
 #print-root{display:none}
 @page{size:letter landscape;margin:0}
@@ -394,11 +498,15 @@ dialog::backdrop{background:rgba(18,22,44,.52);-webkit-backdrop-filter:blur(3px)
 .sheet .th>span.split{display:flex;justify-content:space-between;padding-right:5pt}
 .sheet .th>span:last-child{text-align:right;padding-right:4pt}
 .sheet .pr+.th{margin-top:6pt}
-.sheet .pr{flex:1 0 var(--rh);min-height:var(--rh);max-height:var(--rmax);border-bottom:.45pt solid var(--rule)}
+.sheet .pr{flex:1 1 var(--rh);min-height:7.5pt;max-height:var(--rmax);border-bottom:.45pt solid var(--rule)}
+/* columns with many items get smaller type so the form still fits one page */
+.sheet .dense .pr{font-size:6.8pt}
+.sheet .dense .pr .fv{font-size:7.2pt}
+.sheet .dense .cp .sr{height:12.6pt}
 .sheet .pr>span,.sheet .sr>span{display:flex;align-items:flex-end;min-width:0;padding-bottom:1.6pt;line-height:1;white-space:nowrap;overflow:hidden}
 .sheet .pq{justify-content:center;border-right:.45pt solid var(--rule)}
 .sheet .pd{font-weight:700;padding-left:5pt}
-.sheet .pd b{font-weight:700;overflow:hidden;padding-bottom:2pt;margin-bottom:-2pt}
+.sheet .pd b{font-weight:700;overflow:hidden;text-overflow:ellipsis;padding-bottom:2pt;margin-bottom:-2pt}
 .sheet .pd.num{justify-content:flex-end;padding-right:7pt}
 .sheet .pd.split{justify-content:space-between;gap:4pt;padding-right:5pt}
 .sheet .pd i{flex:none;font-style:normal;font-family:var(--mono);font-size:7pt;font-weight:500;color:#555;letter-spacing:-.02em}
@@ -487,6 +595,13 @@ dialog::backdrop{background:rgba(18,22,44,.52);-webkit-backdrop-filter:blur(3px)
   <aside class="summary" id="summary" aria-label="Day summary"></aside>
 </main>
 
+<footer class="credit">
+  <div class="credit-in">
+    <div class="credit-l"><img src="assets/favicon.png" alt=""><span><b>Safe Count Log</b><span class="ver" id="app-ver"></span></span></div>
+    <div class="credit-r">Designed &amp; developed by <b>Farzad Chatrsimab</b></div>
+  </div>
+</footer>
+
 <div id="print-root"></div>
 
 <dialog class="dlg-full" id="dlg-preview" aria-label="Print preview">
@@ -507,32 +622,11 @@ dialog::backdrop{background:rgba(18,22,44,.52);-webkit-backdrop-filter:blur(3px)
   <div class="dlg-f"><button type="button" class="btn" data-act="import" data-ic="upload">Import backup</button><button type="button" class="btn" data-act="export" data-ic="download">Export backup</button></div>
 </dialog>
 
-<dialog class="dlg wide" id="dlg-settings" aria-label="Settings">
+<dialog class="dlg set" id="dlg-settings" aria-label="Settings">
   <div class="dlg-h"><div><div class="dlg-t">Settings</div><div class="dlg-s">Saved in this browser on this computer</div></div><button type="button" class="xbtn" data-act="close" aria-label="Close" data-ic="x"></button></div>
-  <div class="dlg-b">
-    <div class="set-grid">
-      <label class="fl"><span>Store number</span><input class="in text" data-sbind="storeNo" autocomplete="off" placeholder="e.g. 1234"><small>Shown in the header and on the printout.</small></label>
-      <label class="fl"><span>Expected safe float</span><div class="field money"><span class="pre">$</span><input class="in" data-sbind="target" inputmode="decimal" autocomplete="off" placeholder="3,000.00"></div><small>Typed-in safe counts are checked against it.</small></label>    </div>
-    <div class="sect">
-      <div class="sect-t">Default prices &amp; floats</div>
-      <p>Every new day starts with these amounts. A day you've already started keeps its own — change that one with <b>Edit prices</b> on the day.</p>
-      <div id="defaults"></div>
-    </div>
-    <div class="sect">
-      <div class="sect-t">Your data</div>
-      <p>Every day you fill in is saved automatically in this browser. Export a backup once in a while — it is also how you move your logs to another computer.</p>
-      <div class="btnrow"><button type="button" class="btn" data-act="export" data-ic="download">Export backup</button><button type="button" class="btn" data-act="import" data-ic="upload">Import backup</button></div>
-    </div>
-    <div class="sect">
-      <div class="sect-t">Try it with sample numbers</div>
-      <p>Opens a demo filled in from the sample Nov 1 sheet. Nothing in the demo is saved.</p>
-      <button type="button" class="btn" data-act="demo" data-ic="eye">Open the demo</button>
-    </div>
-    <div class="sect">
-      <div class="sect-t">Start over</div>
-      <p>Removes every saved day from this browser. Export a backup first if you might need them.</p>
-      <button type="button" class="btn danger" data-act="wipe" data-ic="trash">Delete all saved days</button>
-    </div>
+  <div class="set-body">
+    <nav class="set-nav" id="set-nav" aria-label="Settings sections"></nav>
+    <div class="set-main" id="set-main"></div>
   </div>
 </dialog>
 
@@ -613,6 +707,11 @@ const IC = {
   trash: svg('<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>'),
   reset: svg('<path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/>'),
   x: svg('<path d="M18 6 6 18M6 6l12 12"/>'),
+  up: svg('<path d="m18 15-6-6-6 6"/>'),
+  down: svg('<path d="m6 9 6 6 6-6"/>'),
+  plus: svg('<path d="M12 5v14M5 12h14"/>'),
+  collapse: svg('<path d="m7 20 5-5 5 5M7 4l5 5 5-5"/>'),
+  expand: svg('<path d="m7 15 5 5 5-5M7 9l5-5 5 5"/>'),
   download: svg('<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>'),
   upload: svg('<path d="M12 16V4M7 9l5-5 5 5M5 21h14"/>'),
   alert: svg('<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>', 16),
@@ -626,6 +725,8 @@ const RECEIPT_ART = svg('<path d="M6 2.5h12v19l-3-2-3 2-3-2-3 2z"/><path d="M9 7
 
 /* ============ The form's structure ============ */
 const STORE_KEY = 'sdm-safe-count-log/v1';
+const UI_KEY = 'sdm-safe-count-log/ui';
+const APP_VERSION = '2.0';
 /* Safe counts are either TellerMate receipts (the printout leaves a box for each) or typed in by hand. */
 const SAFE_KEYS = ['s1', 's2', 's3', 's4'];
 const SAFE = {
@@ -687,10 +788,10 @@ function normalize(L) {
   for (const k of SAFE_KEYS) out.safe[k] = {qty: {...(L.safe?.[k]?.qty || {})}, loose: L.safe?.[k]?.loose ?? null};
   out.deposit = {...T.deposit, ...(L.deposit || {})};
   for (const k of INV) out[k] = {...T[k], ...(L[k] || {})};
-  /* Lottery price points are fixed: rebuild them so older saves pick up the current list. */
+  /* Days saved while the list still had a $1 row get the current price points. */
   for (const k of ['active', 'inactive']) {
     const old = out[k].rows || [];
-    out[k].rows = lottoRows().map(r => ({...r, qty: old.find(o => o.id === r.id)?.qty ?? null}));
+    if (!old.length || old.some(o => o.id === 'l1')) out[k].rows = lottoRows().map(r => ({...r, qty: old.find(o => o.id === r.id)?.qty ?? null}));
   }
   /* The $6.56 "Other" item is garbage bags: name it on days saved before it had a label. */
   const bags = out.other.rows?.find(r => r.id === 'o1');
@@ -708,20 +809,46 @@ let rerenderAfterChange = false;
 /* Default prices and floats for new days, kept in Settings. */
 const DEF_KEYS = ['active', 'stamps', 'other', 'transit'];
 function defaultsFrom(L) {
-  const d = {};
+  const d = {lotto: L.active.rows.map(r => r.price / 100)};
   for (const k of DEF_KEYS) {
     d[k] = {floats: {...L[k].floats}};
-    if (k !== 'active') d[k].rows = L[k].rows.map(({id, label, price}) => ({id, label, price}));
+    if (k !== 'active') d[k].rows = L[k].rows.map(({id, label, price, grp}) => ({id, label, price, ...(grp ? {grp} : {})}));
   }
   return d;
+}
+
+/* Defaults saved by earlier versions had no lottery list and no transit groups. */
+function upgradeDefaults(D) {
+  if (!Array.isArray(D.lotto)) D.lotto = [...LOTTO];
+  const T = template();
+  for (const r of D.transit?.rows || []) if (!r.grp) r.grp = T.transit.rows.find(t => t.id === r.id)?.grp || 'p';
+  return D;
+}
+
+const lottoItem = d => item('l' + d, '$' + d, Math.round(d * 100), {fixed: true});
+
+/* Give a day the item lists from Settings, keeping what was already counted —
+   a row removed in Settings stays on this day if it already has a count. */
+function applyDefaultsToDay(L) {
+  const fresh = newLog(L.date);
+  for (const k of INV) {
+    const old = L[k].rows;
+    const rows = fresh[k].rows.map(r => { const o = old.find(x => x.id === r.id); return o ? {...r, qty: o.qty, amt: o.amt} : r; });
+    for (const o of old) if (!rows.some(r => r.id === o.id) && (o.qty != null || o.amt != null)) rows.push(o);
+    if (k === 'active' || k === 'inactive') rows.sort((a, b) => a.price - b.price);
+    L[k].rows = rows;
+  }
 }
 
 function newLog(date) {
   const L = template(); L.date = date;
   const D = store.settings.defaults;
-  if (D) for (const k of DEF_KEYS) {
-    if (D[k]?.floats) L[k].floats = {...D[k].floats};
-    if (D[k]?.rows) L[k].rows = L[k].rows.map(r => { const dr = D[k].rows.find(x => x.id === r.id); return dr ? {...r, label: dr.label, price: dr.price} : r; });
+  if (D) {
+    if (D.lotto) { L.active.rows = D.lotto.map(lottoItem); L.inactive.rows = D.lotto.map(lottoItem); }
+    for (const k of DEF_KEYS) {
+      if (D[k]?.floats) L[k].floats = {...D[k].floats};
+      if (D[k]?.rows) L[k].rows = D[k].rows.map(r => item(r.id, r.label, r.price, r.grp ? {grp: r.grp} : {}));
+    }
   }
   L.safeMode = store.settings.safeMode || 'receipt';
   const prev = Object.keys(store.logs).filter(d => d < date).sort().pop();
@@ -1060,7 +1187,10 @@ function summaryHTML() {
   const safeRow = k => `<div class="sum-row"><span class="dot" data-st="safe.${k}.status"></span><span class="n">#${SAFE[k].n} ${SAFE[k].short}</span><span class="v" data-out="safe.${k}.total" data-empty="—"></span></div>`;
   const varLine = (k, plainNum) => `<div class="sum-row"><span class="dot" data-st="${k}.status"></span><span class="n">${NAMES[k]}</span><span class="v" data-out="${k}.variance" data-f="${plainNum ? 'plainSigned' : 'signed'}" data-empty="—"></span></div>`;
   return `<div class="sum">
-    <div class="sum-top"><div class="k">Day summary</div><div class="d" id="sum-date"></div></div>
+    <div class="sum-top">
+      <div class="sum-tl"><div class="k">Day summary</div><div class="d" id="sum-date"></div><div class="prog-t" id="prog-t"></div></div>
+      <div class="ring" id="ring" title="Sections that balance"><svg viewBox="0 0 44 44" aria-hidden="true"><circle class="rt" cx="22" cy="22" r="18"/><circle class="rv" id="ring-v" cx="22" cy="22" r="18"/></svg><span id="ring-n">0%</span></div>
+    </div>
     <div class="sum-sec">
       <div class="sum-h"><span>Safe</span><em class="safe-manual">float <b data-out="target"></b></em></div>
       <div class="safe-manual">${SAFE_KEYS.map(safeRow).join('')}</div>
@@ -1091,8 +1221,60 @@ function render() {
   $('#today-btn').hidden = isToday;
   $('#date-input').value = curDate;
   $('#sum-date').textContent = fmtLong(curDate);
-  $('#content').innerHTML = noticeHTML() + Object.values(CARDS).map(f => f()).join('');
+  const content = $('#content');
+  content.innerHTML = noticeHTML() + Object.values(CARDS).map(f => f()).join('');
+  decorateCards();
+  content.classList.add('enter');
+  clearTimeout(content._t); content._t = setTimeout(() => content.classList.remove('enter'), 1000);
   refresh();
+}
+
+/* ============ Collapsible sections ============ */
+let collapsed = {};
+try { collapsed = JSON.parse(localStorage.getItem(UI_KEY) || '{}').collapsed || {}; } catch (e) { /* start expanded */ }
+const saveCollapsed = () => { try { localStorage.setItem(UI_KEY, JSON.stringify({collapsed})); } catch (e) { /* per-viewer nicety only */ } };
+
+/* Wrap each card's body so it can fold away under its header. */
+function decorateCards() {
+  for (const sec of $$('#content section.card[data-sec]')) {
+    if (sec.dataset.dec) continue;
+    sec.dataset.dec = '1';
+    const h = $('.card-h', sec), k = sec.dataset.sec;
+    const rest = [...sec.children].filter(c => c !== h);
+    h.insertAdjacentHTML('beforeend', `<span class="peek" data-peek="${k}"></span><span class="chev">${IC.down}</span>`);
+    if (!rest.length) { sec.classList.add('nobody'); continue; }
+    Object.assign(h.dataset, {act: 'toggle-sec', k});
+    h.setAttribute('role', 'button'); h.tabIndex = 0;
+    const x = document.createElement('div'), xi = document.createElement('div');
+    x.className = 'card-x'; xi.className = 'card-xi';
+    rest.forEach(c => xi.appendChild(c));
+    x.appendChild(xi); sec.appendChild(x);
+    setCollapsed(sec, !!collapsed[k]);
+  }
+  updateAllBtn();
+}
+
+function setCollapsed(sec, on) {
+  sec.classList.toggle('collapsed', on);
+  $('.card-h', sec)?.setAttribute('aria-expanded', String(!on));
+  const x = $('.card-x', sec);
+  if (x) x.inert = on;
+}
+
+function toggleSection(k, on) {
+  const sec = $(`#content [data-sec="${k}"]`);
+  if (!sec || sec.classList.contains('nobody')) return;
+  collapsed[k] = on ?? !collapsed[k];
+  setCollapsed(sec, collapsed[k]);
+  saveCollapsed(); updateAllBtn();
+}
+
+function updateAllBtn() {
+  const b = $('#all-btn');
+  if (!b) return;
+  const anyOpen = $$('#content section.card[data-sec]:not(.nobody)').some(s => !s.classList.contains('collapsed'));
+  b.innerHTML = anyOpen ? `${IC.collapse}Collapse all` : `${IC.expand}Expand all`;
+  b.dataset.k = anyOpen ? 'close' : 'open';
 }
 
 function renderCard(name) {
@@ -1100,6 +1282,7 @@ function renderCard(name) {
   if (!el) return render();
   const focused = document.activeElement?.dataset?.bind;
   el.outerHTML = CARDS[name]();
+  decorateCards();
   refresh();
   if (focused) $(`#content [data-bind="${focused}"]`)?.focus();
 }
@@ -1120,16 +1303,28 @@ function safeBadge(r) {
 function refresh() {
   C = compute(log);
   for (const el of $$('[data-out]')) {
-    const v = get(C, el.dataset.out);
+    const v = get(C, el.dataset.out), f = el.dataset.f || 'money$';
     const empty = v == null || v === '';
-    el.textContent = empty ? (el.dataset.empty ?? '') : FMT[el.dataset.f || 'money$'](v);
     el.classList.toggle('is-empty', empty);
+    if (empty || typeof v !== 'number' || f === 'text') {
+      cancelAnimationFrame(el._raf); el._v = null;
+      el.textContent = empty ? (el.dataset.empty ?? '') : FMT[f](v);
+      continue;
+    }
+    const step = f === 'plain' || f === 'plainSigned' ? 100 : 1;
+    const from = el._v ?? (countUp && el.closest('.sum, .panel-sum, .dep-total, .totalbar') ? 0 : null);
+    tween(el, from, v, x => FMT[f](Math.round(x / step) * step));
+    if (el._v != null && el._v !== v) flash(el);
+    el._v = v;
   }
+  countUp = false;
   for (const el of $$('[data-st]')) el.dataset.s = get(C, el.dataset.st) || 'empty';
-  for (const el of $$('[data-var]')) el.innerHTML = varBadge(get(C, el.dataset.var), el.hasAttribute('data-plain'));
-  for (const el of $$('[data-safebadge]')) el.innerHTML = safeBadge(C.safe[el.dataset.safebadge]);
+  for (const el of $$('[data-var]')) setHTML(el, varBadge(get(C, el.dataset.var), el.hasAttribute('data-plain')));
+  for (const el of $$('[data-safebadge]')) setHTML(el, safeBadge(C.safe[el.dataset.safebadge]));
+  for (const el of $$('[data-peek]')) setHTML(el, peekHTML(el.dataset.peek));
+  updateRing();
   $('#summary').dataset.safe = log.safeMode;
-  for (const p of $$('.pill')) $('.dot', p).dataset.s = C.nav[p.dataset.k];
+  for (const p of $$('.pill[data-act="nav"]')) $('.dot', p).dataset.s = C.nav[p.dataset.k];
   const chip = $('[data-act="use-activations"]');
   if (chip) {
     const a = log.inactive.activations, show = a != null && a !== 0 && log.active.additions == null;
@@ -1139,6 +1334,52 @@ function refresh() {
   syncInputs();
   if ($('#dlg-preview').open) paintPreview();
   queueSheet();
+}
+
+/* ============ Motion helpers ============ */
+const motion = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+let countUp = false, lastPct = null, quietRing = false;
+
+/* Count a number up or down to its new value. */
+function tween(el, from, to, fmt, dur = 520) {
+  cancelAnimationFrame(el._raf);
+  if (!motion || from == null || from === to || !el.isConnected) { el.textContent = fmt(to); return; }
+  const t0 = performance.now();
+  const step = now => {
+    const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+    el.textContent = fmt(from + (to - from) * e);
+    if (p < 1) el._raf = requestAnimationFrame(step);
+  };
+  el._raf = requestAnimationFrame(step);
+}
+function flash(el) { if (!motion) return; el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+/* Only replace markup that changed, so badges pop when their state changes rather than on every keystroke. */
+function setHTML(el, html) { if (el._h !== html) { el.innerHTML = html; el._h = html; } }
+
+function peekHTML(k) {
+  const v = (x, plainNum) => x == null ? '—' : x === 0 ? '0.00 ✓' : (plainNum ? plainSigned : signed)(x);
+  const dot = `<span class="dot" data-s="${C.nav[k] || 'empty'}"></span>`;
+  const text = {
+    safe: () => log.safeMode === 'manual' ? `${SAFE_KEYS.filter(s => C.safe[s].has).length} of 4 counted` : 'TellerMate receipts',
+    deposit: () => C.deposit.total != null ? `Total ${money$(C.deposit.total)}` : 'Not entered yet',
+    lottery: () => `Active ${v(C.active.variance)} · In-active ${v(C.inactive.variance)}`,
+    stamps: () => `Stamps ${v(C.stamps.variance)} · Other ${v(C.other.variance)}`,
+    transit: () => `Variance ${v(C.transit.variance)}`,
+    coupons: () => `Variance ${v(C.coupons.variance, true)}`,
+  }[k];
+  return text ? dot + esc(text()) : '';
+}
+
+/* The ring counts the sections that must balance every day. */
+function updateRing() {
+  const steps = [...(log.safeMode === 'manual' ? SAFE_KEYS.map(k => C.safe[k].status) : []), C.deposit.status, C.active.status, C.inactive.status, C.stamps.status, C.transit.status];
+  const done = steps.filter(s => s === 'ok').length, pct = Math.round(done / steps.length * 100);
+  $('#ring-v').style.strokeDashoffset = String(113.1 * (1 - done / steps.length));
+  $('#ring').classList.toggle('full', done === steps.length);
+  tween($('#ring-n'), lastPct, pct, x => `${Math.round(x)}%`, 800);
+  $('#prog-t').textContent = done === steps.length ? 'Everything balances' : `${done} of ${steps.length} sections balanced`;
+  if (!quietRing && lastPct != null && lastPct < 100 && pct === 100) toast('Everything balances — ready to print');
+  lastPct = pct; quietRing = false;
 }
 
 /* Push state into every input that isn't being typed in. */
@@ -1222,7 +1463,12 @@ function sheetHTML(L, c) {
   const head = (t, sub) => `<div class="ph"><span>${t}</span>${sub ? `<small>(${sub})</small>` : ''}</div>`;
   const TH = (item, num, priced) => `<div class="th"><span>Qty</span><span${num ? ' class="num"' : priced ? ' class="split"' : ''}>${priced ? `<b>${item}</b><b>Price</b>` : item}</span><span>Amount</span></div>`;
   const R = (qty, label, val, num, price) => `<div class="pr"><span class="pq">${fv(qty)}</span><span class="pd${num ? ' num' : ''}${price ? ' split' : ''}"><b>${esc(label)}</b>${price ? `<i>${price}</i>` : ''}</span><span class="pv">${fv(val)}</span></div>`;
-  const P = r => r.price != null ? (r.price / 100).toFixed(2) : '';
+  /* Show the price beside the name only when both fit the cell (rough widths in points); otherwise the full name wins. */
+  const P = (r, room) => {
+    if (r.price == null || (r.label || '').includes('$')) return '';
+    const price = (r.price / 100).toFixed(2);
+    return (r.label || '').length * 4.3 + 4 + price.length * 4.2 <= room ? price : '';
+  };
   const SR = (label, val, cls = '') => `<div class="sr${cls ? ' ' + cls : ''}"><span>${label}</span><span>${fv(val)}</span></div>`;
   const SIG = '<div class="sg"><span>Signature</span><span></span></div>';
   const floatRow = (S, num) => R(q(S.floats?.n), 'Floats', m(S.floats?.amt), num);
@@ -1254,25 +1500,26 @@ function sheetHTML(L, c) {
     </div></div>`;
 
   const A = L.active, ca = c.active;
-  const activeCol = `<div class="pc">${head('Active Offline Lottery')}<div class="pb">${TH('Price', true)}${lotRows(A, ca)}${floatRow(A, true)}<div class="sp"></div>${salesFoot(A, ca)}</div></div>`;
+  const dense = (n, max) => n > max ? ' dense' : '';
+  const activeCol = `<div class="pc${dense(A.rows.length + 1, 11)}">${head('Active Offline Lottery')}<div class="pb">${TH('Price', true)}${lotRows(A, ca)}${floatRow(A, true)}<div class="sp"></div>${salesFoot(A, ca)}</div></div>`;
 
   const I = L.inactive, ci = c.inactive;
-  const inactiveCol = `<div class="pc">${head('In-Active Offline Lottery')}<div class="pb">${TH('Price', true)}${lotRows(I, ci)}<div class="sp"></div>
+  const inactiveCol = `<div class="pc${dense(I.rows.length, 11)}">${head('In-Active Offline Lottery')}<div class="pb">${TH('Price', true)}${lotRows(I, ci)}<div class="sp"></div>
       <div class="sm">${SR('Total', ci.has ? money$(ci.total) : '', 'tot')}${SR('Additions', m(I.additions))}${SR('Activations', m(I.activations))}${SR('Expected Total', ci.has ? m(ci.expected) : '')}${SR('Variance (+/−)', sg(ci.variance), 'var')}</div>${SIG}</div></div>`;
 
   const ST = L.stamps, cst = c.stamps;
-  const stampRows = ST.rows.map((r, i) => R(q(r.qty), r.label, m(cst.rows[i]), false, P(r))).join('');
-  const stampsCol = `<div class="pc" style="--qw:.36in;--aw:.68in">${head('Stamps')}<div class="pb">${TH('Booklet', false, true)}${stampRows}${floatRow(ST)}<div class="sp"></div>${salesFoot(ST, cst)}</div></div>`;
+  const stampRows = ST.rows.map((r, i) => R(q(r.qty), r.label, m(cst.rows[i]), false, P(r, 47))).join('');
+  const stampsCol = `<div class="pc${dense(ST.rows.length + 1, 12)}" style="--qw:.36in;--aw:.68in">${head('Stamps')}<div class="pb">${TH('Booklet', false, true)}${stampRows}${floatRow(ST)}<div class="sp"></div>${salesFoot(ST, cst)}</div></div>`;
 
   const T = L.transit, ct = c.transit;
   /* A label that already carries its price, like "Cards ($4)", doesn't repeat it. */
-  const tRows = g => T.rows.map((r, i) => r.grp === g ? R(q(r.qty), r.label, m(ct.rows[i]), false, r.label.includes('$') ? '' : P(r)) : '').join('');
-  const transitCol = `<div class="pc" style="--qw:.36in;--aw:.68in">${head('Transit')}<div class="pb">${TH('Tickets', false, true)}${tRows('t')}${TH('Passes', false, true)}${tRows('p')}${tRows('x')}${floatRow(T)}<div class="sp"></div>${salesFoot(T, ct)}</div></div>`;
+  const tRows = g => T.rows.map((r, i) => r.grp === g ? R(q(r.qty), r.label, m(ct.rows[i]), false, P(r, 47)) : '').join('');
+  const transitCol = `<div class="pc${dense(T.rows.length + 1, 14)}" style="--qw:.36in;--aw:.68in">${head('Transit')}<div class="pb">${TH('Tickets', false, true)}${tRows('t')}${TH('Passes', false, true)}${tRows('p')}${tRows('x')}${floatRow(T)}<div class="sp"></div>${salesFoot(T, ct)}</div></div>`;
 
   /* "Other" sits under the coupons so every column ends with its totals at the same height. */
   const K = L.coupons, ck = c.coupons, O = L.other, co = c.other;
-  const otherRows = O.rows.map((r, i) => R(q(r.qty), r.label || '', m(co.rows[i]), false, P(r))).join('');
-  const lastCol = `<div class="pc">${head('$10 Shoppers Drug Mart Coupons')}
+  const otherRows = O.rows.map((r, i) => R(q(r.qty), r.label || '', m(co.rows[i]), false, P(r, 74))).join('');
+  const lastCol = `<div class="pc${dense(O.rows.length + 1, 4)}">${head('$10 Shoppers Drug Mart Coupons')}
       <div class="pb fixed cp"><div class="sm">${SR('Previous Day Start', pn(ck.prev))}${SR('Additions', pn(K.additions))}${SR('Issued', pn(K.issued))}${SR('Assumed Total', ck.has ? pn(ck.assumed) : '')}${SR('Actual Total', pn(K.actual))}${SR('Variance (+/−)', ck.variance == null ? '' : plainSigned(ck.variance), 'var')}</div>${SIG}</div>
       <div class="band">Other</div>
       <div class="pb" style="--qw:.3in;--aw:.62in">${TH('Item', false, true)}${otherRows}${floatRow(O)}<div class="sp"></div>${salesFoot(O, co)}</div></div>`;
@@ -1354,29 +1601,99 @@ function renderHistory() {
   }).join('') : `<div class="empty-state">${IC.folder}<div>Days you fill in will show up here.</div></div>`;
 }
 
-function openSettings() {
-  $('[data-sbind="storeNo"]').value = store.settings.storeNo || '';
-  $('[data-sbind="target"]').value = moneyEdit(store.settings.target ?? 0);
-  renderDefaults();
+const SET_TABS = [['general', 'General', 'settings'], ['items', 'Items & prices', 'tag'], ['lottery', 'Lottery', 'ticket'], ['floats', 'Floats', 'bank'], ['data', 'Your data', 'folder'], ['about', 'About', 'info']];
+let setTab = 'general';
+
+function openSettings(tab) {
+  if (tab) setTab = tab;
+  renderSettings();
   $('#dlg-settings').showModal();
 }
 
-function renderDefaults() {
-  const D = store.settings.defaults, T = template();
-  const price = (b, label) => `<div class="field money"><span class="pre">$</span><input class="in" data-dbind="${b}" data-kind="money" inputmode="decimal" autocomplete="off" placeholder="No price" aria-label="${esc(label)}"></div>`;
-  const tag = {t: 'Ticket', p: 'Pass'};
-  const row = (k, r, i) => {
-    const t = T[k].rows.find(x => x.id === r.id) || {};
-    const name = t.lock ? `<span>${esc(r.label)}</span>` : `<input class="in text sm" data-dbind="${k}.rows.${i}.label" data-kind="text" autocomplete="off" placeholder="Name" aria-label="Item name">`;
-    return `<div class="dfl-row"><div class="nm">${tag[t.grp] ? `<small>${tag[t.grp]}</small>` : ''}${name}</div>${price(`${k}.rows.${i}.price`, `${r.label || 'Item'} price`)}</div>`;
-  };
-  const floats = k => `<div class="dfl-row fl3"><div class="nm">Floats</div><input class="in" data-dbind="${k}.floats.n" data-kind="count" inputmode="numeric" autocomplete="off" aria-label="Number of floats">${price(`${k}.floats.amt`, 'Floats total')}</div>`;
-  const grp = (title, k) => `<div class="dfl-grp"><h4>${title}</h4>${(D[k].rows || []).map((r, i) => row(k, r, i)).join('')}${floats(k)}</div>`;
-  $('#defaults').innerHTML = grp('Active Offline Lottery', 'active') + grp('Stamps', 'stamps') + grp('Other', 'other') + grp('Transit', 'transit');
-  for (const el of $$('#defaults [data-dbind]')) {
+function todayBanner() {
+  return store.logs[curDate]
+    ? `<div class="tbanner">${IC.info}<span>${fmtShort(curDate)} is already started, so it keeps its own list.</span><button type="button" class="link-btn" data-act="apply-today">Use these items on ${fmtShort(curDate)} too</button></div>`
+    : `<div class="tbanner ok">${IC.check}<span>Changes show up on ${fmtShort(curDate)} right away, and on every new day.</span></div>`;
+}
+
+const SETTINGS = {
+  general: () => `<h3 class="st">General</h3><p>The basics for this store.</p>
+    <div class="set-grid">
+      <label class="fl"><span>Store number</span><input class="in text" data-sbind="storeNo" autocomplete="off" placeholder="e.g. 1234"><small>Shown in the header and on the printout.</small></label>
+      <label class="fl"><span>Expected safe float</span><div class="field money"><span class="pre">$</span><input class="in" data-sbind="target" inputmode="decimal" autocomplete="off" placeholder="3,000.00"></div><small>Typed-in safe counts are checked against it.</small></label>
+    </div>
+    <div class="sect"><div class="sect-t">Safe counts on new days</div><p>How a brand-new day starts. You can still switch on any day.</p>
+      <div class="seg" role="group" aria-label="Safe counts on new days">
+        <button type="button" class="${store.settings.safeMode === 'manual' ? '' : 'on'}" data-act="set-safe-default" data-k="receipt">${IC.receipt} TellerMate receipts</button>
+        <button type="button" class="${store.settings.safeMode === 'manual' ? 'on' : ''}" data-act="set-safe-default" data-k="manual">${IC.pencil} Enter counts</button>
+      </div></div>`,
+
+  items: () => {
+    const D = store.settings.defaults;
+    const list = (title, k, grp, addLabel) => {
+      const rows = D[k].rows.map((r, i) => ({r, i})).filter(x => (x.r.grp || '') === grp);
+      return `<div class="ilist"><div class="ilist-h"><h4>${title}</h4><span class="cnt">${rows.length}</span></div>
+        ${rows.map(({i}, j) => `<div class="irow">
+          <span class="num">${j + 1}</span>
+          <input class="in text sm" data-dbind="${k}.rows.${i}.label" data-kind="text" autocomplete="off" placeholder="Name" aria-label="Item name">
+          <div class="field money sm"><span class="pre">$</span><input class="in sm" data-dbind="${k}.rows.${i}.price" data-kind="money" inputmode="decimal" autocomplete="off" placeholder="No price" aria-label="Price"></div>
+          <div class="iact">
+            <button type="button" class="xbtn sm" data-act="item-move" data-k="${k}:${i}:-1" title="Move up" aria-label="Move up"${j === 0 ? ' disabled' : ''}>${IC.up}</button>
+            <button type="button" class="xbtn sm" data-act="item-move" data-k="${k}:${i}:1" title="Move down" aria-label="Move down"${j === rows.length - 1 ? ' disabled' : ''}>${IC.down}</button>
+            <button type="button" class="xbtn sm del" data-act="item-del" data-k="${k}:${i}" title="Remove" aria-label="Remove">${IC.trash}</button>
+          </div></div>`).join('') || '<div class="iempty">Nothing here yet</div>'}
+        <button type="button" class="add-btn" data-act="item-add" data-k="${k}:${grp}">${IC.plus} ${addLabel}</button></div>`;
+    };
+    return `<h3 class="st">Items &amp; prices</h3><p>The rows each section counts. Add, rename, reorder or remove them; a row without a price takes a typed amount instead.</p>${todayBanner()}
+      <div class="igrid">${list('Stamps', 'stamps', '', 'Add booklet')}${list('Other', 'other', '', 'Add item')}${list('Transit tickets', 'transit', 't', 'Add ticket')}${list('Transit passes', 'transit', 'p', 'Add pass')}${list('Transit — other rows', 'transit', 'x', 'Add row')}</div>`;
+  },
+
+  lottery: () => `<h3 class="st">Lottery price points</h3><p>The ticket prices counted in both lottery sections, lowest to highest.</p>${todayBanner()}
+    <div class="chips">${store.settings.defaults.lotto.map(d => `<span class="lchip">$${d}<button type="button" data-act="lotto-del" data-k="${d}" aria-label="Remove $${d}">${IC.x}</button></span>`).join('') || '<span class="iempty">No price points</span>'}</div>
+    <div class="ladd"><div class="field money"><span class="pre">$</span><input class="in" id="lotto-new" inputmode="numeric" autocomplete="off" placeholder="e.g. 25" aria-label="New ticket price"></div><button type="button" class="btn" data-act="lotto-add">${IC.plus} Add price</button></div>`,
+
+  floats: () => `<h3 class="st">Till floats</h3><p>How many floats sit at the tills and what they add up to. New days start with these; change a single day on its own page.</p>
+    ${[['active', 'Active Offline Lottery'], ['stamps', 'Stamps'], ['other', 'Other'], ['transit', 'Transit']].map(([k, t]) => `<div class="frow"><div class="ft">${t}</div>
+      <label class="fl"><span>Floats</span><input class="in" data-dbind="${k}.floats.n" data-kind="count" inputmode="numeric" autocomplete="off"></label>
+      <label class="fl"><span>Total</span><div class="field money"><span class="pre">$</span><input class="in" data-dbind="${k}.floats.amt" data-kind="money" inputmode="decimal" autocomplete="off"></div></label></div>`).join('')}`,
+
+  data: () => `<h3 class="st">Your data</h3><p>Every day you fill in is saved automatically in this browser.</p>
+    <div class="sect" style="margin-top:0;padding-top:0;border-top:0"><div class="sect-t">Backup</div><p>Export a backup once in a while — it's also how you move your logs to another computer.</p>
+      <div class="btnrow"><button type="button" class="btn" data-act="export">${IC.download} Export backup</button><button type="button" class="btn" data-act="import">${IC.upload} Import backup</button></div></div>
+    <div class="sect"><div class="sect-t">Try it with sample numbers</div><p>Opens a demo filled in from the sample Nov 1 sheet. Nothing in the demo is saved.</p>
+      <button type="button" class="btn" data-act="demo">${IC.eye} Open the demo</button></div>
+    <div class="sect"><div class="sect-t">Start over</div><p>Removes every saved day from this browser. Export a backup first if you might need them.</p>
+      <button type="button" class="btn danger" data-act="wipe">${IC.trash} Delete all saved days</button></div>`,
+
+  about: () => `<div class="about">
+    <img class="about-ic" src="assets/icon-192.png" alt="">
+    <div class="about-t">Safe Count Log</div>
+    <div class="about-v">Version ${APP_VERSION}</div>
+    <div class="dev-card"><div class="dev-av">FC</div><div><div class="dev-k">Designed &amp; developed by</div><div class="dev-n">Farzad Chatrsimab</div></div></div>
+    <p>Made for the Shoppers Drug Mart cash office: type in the day's counts, let the app do the math, and print the finished Safe Count Log. Everything you enter stays in this browser.</p>
+  </div>`,
+};
+
+function renderSettings() {
+  $('#set-nav').innerHTML = SET_TABS.map(([k, t, ic]) => `<button type="button" class="${k === setTab ? 'on' : ''}" data-act="set-tab" data-k="${k}">${IC[ic]}<span>${t}</span></button>`).join('');
+  $('#set-main').innerHTML = SETTINGS[setTab]();
+  const D = store.settings.defaults;
+  for (const el of $$('#set-main [data-dbind]')) {
     const v = get(D, el.dataset.dbind);
     el.value = v == null ? '' : el.dataset.kind === 'money' ? moneyEdit(v) : String(v);
   }
+  const no = $('#set-main [data-sbind="storeNo"]'), t = $('#set-main [data-sbind="target"]');
+  if (no) no.value = store.settings.storeNo || '';
+  if (t) t.value = moneyEdit(store.settings.target ?? 0);
+}
+
+/* After an item or price-point change: refresh a day that hasn't started, save, redraw Settings. */
+function defaultsChanged() {
+  if (!store.logs[curDate]) { log = newLog(curDate); render(); }
+  scheduleSave();
+  const scroll = $('#set-main').scrollTop;
+  renderSettings();
+  $('#set-main').scrollTop = scroll;
 }
 
 function exportBackup() {
@@ -1422,6 +1739,7 @@ function openDate(d) {
   curDate = d;
   log = store.logs[d] || newLog(d);
   ui.edit = {};
+  quietRing = true;
   render();
 }
 
@@ -1431,7 +1749,7 @@ function spy() {
   let cur = NAV[0][0];
   for (const el of $$('[data-sec]')) if (el.getBoundingClientRect().top <= y) cur = el.dataset.sec;
   if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) cur = $$('[data-sec]').pop()?.dataset.sec || cur;
-  for (const p of $$('.pill')) p.classList.toggle('on', p.dataset.k === cur);
+  for (const p of $$('.pill[data-act="nav"]')) p.classList.toggle('on', p.dataset.k === cur);
 }
 
 /* ============ Events ============ */
@@ -1522,6 +1840,8 @@ document.addEventListener('focusout', e => {
 });
 
 document.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.card-h[data-act]')) { e.preventDefault(); toggleSection(e.target.dataset.k); return; }
+  if (e.key === 'Enter' && e.target.id === 'lotto-new') { e.preventDefault(); $('[data-act="lotto-add"]').click(); return; }
   if (e.key !== 'Enter' || !e.target.matches('#content input.in')) return;
   e.preventDefault();
   const el = e.target, grp = el.dataset.nav;
@@ -1556,7 +1876,59 @@ document.addEventListener('click', e => {
     case 'prev-day': openDate(addDays(curDate, -1)); break;
     case 'next-day': openDate(addDays(curDate, 1)); break;
     case 'today': openDate(todayISO()); break;
+    case 'toggle-sec': toggleSection(k); break;
+    case 'toggle-all':
+      for (const sec of $$('#content section.card[data-sec]:not(.nobody)')) toggleSection(sec.dataset.sec, k === 'close');
+      break;
+    case 'set-tab': setTab = k; renderSettings(); $('#set-main').scrollTop = 0; break;
+    case 'set-safe-default':
+      store.settings.safeMode = k;
+      if (!store.logs[curDate]) { log = newLog(curDate); render(); }
+      scheduleSave(); renderSettings();
+      break;
+    case 'item-add': {
+      const [sec, grp] = k.split(':'), D = store.settings.defaults;
+      D[sec].rows.push({id: 'u' + Date.now().toString(36), label: '', price: null, ...(grp ? {grp} : {})});
+      defaultsChanged();
+      const lists = $$('#set-main .ilist'), idx = ['stamps:', 'other:', 'transit:t', 'transit:p', 'transit:x'].indexOf(k);
+      const names = lists[idx] ? $$('[data-kind="text"]', lists[idx]) : [];
+      names[names.length - 1]?.focus();
+      break;
+    }
+    case 'item-del': {
+      const [sec, i] = k.split(':'), rows = store.settings.defaults[sec].rows;
+      const name = rows[+i].label || 'this item';
+      if (confirm(`Remove “${name}” from new days? Days already saved keep it.`)) { rows.splice(+i, 1); defaultsChanged(); }
+      break;
+    }
+    case 'item-move': {
+      const [sec, si, sd] = k.split(':'), rows = store.settings.defaults[sec].rows, i = +si, dir = +sd, g = rows[i].grp || '';
+      let j = i + dir;
+      while (j >= 0 && j < rows.length && (rows[j].grp || '') !== g) j += dir;
+      if (j >= 0 && j < rows.length) { [rows[i], rows[j]] = [rows[j], rows[i]]; defaultsChanged(); }
+      break;
+    }
+    case 'lotto-del': {
+      const D = store.settings.defaults;
+      D.lotto = D.lotto.filter(d => d !== Number(k));
+      defaultsChanged();
+      break;
+    }
+    case 'lotto-add': {
+      const inp = $('#lotto-new'), n = Number(String(inp.value).replace(/[$,\s]/g, '')), D = store.settings.defaults;
+      if (!Number.isInteger(n) || n <= 0) { inp.classList.add('invalid'); toast('Type a whole-dollar ticket price, like 25', 'bad'); break; }
+      if (D.lotto.includes(n)) { toast(`$${n} is already in the list`); break; }
+      D.lotto = [...D.lotto, n].sort((a, b) => a - b);
+      defaultsChanged();
+      $('#lotto-new')?.focus();
+      break;
+    }
+    case 'apply-today':
+      applyDefaultsToDay(log); touched(); render(); renderSettings();
+      toast(`${fmtShort(curDate)} now uses the Settings items`);
+      break;
     case 'nav': {
+      if (collapsed[k]) toggleSection(k, false);
       const el = $(`[data-sec="${k}"]`);
       if (el) window.scrollTo({top: el.getBoundingClientRect().top + scrollY - topHeight() - 14, behavior: 'smooth'});
       break;
@@ -1646,7 +2018,9 @@ function init() {
   $('#print-btn').insertAdjacentHTML('afterbegin', IC.printer);
   $('#install-btn').insertAdjacentHTML('afterbegin', IC.download);
   for (const el of $$('[data-ic]')) el.insertAdjacentHTML('afterbegin', IC[el.dataset.ic]);
-  $('#secnav').innerHTML = NAV.map(([k, t]) => `<button type="button" class="pill" data-act="nav" data-k="${k}"><span class="dot"></span>${esc(t)}</button>`).join('');
+  $('#secnav').innerHTML = NAV.map(([k, t]) => `<button type="button" class="pill" data-act="nav" data-k="${k}"><span class="dot"></span>${esc(t)}</button>`).join('')
+    + '<button type="button" class="pill ghost" id="all-btn" data-act="toggle-all"></button>';
+  $('#app-ver').textContent = `v${APP_VERSION}`;
   $('#summary').innerHTML = summaryHTML();
 
   if (demo) { store = demoStore(); curDate = '2026-11-01'; $('#demo-banner').hidden = false; }
@@ -1655,6 +2029,8 @@ function init() {
     const latest = Object.keys(store.logs).sort().pop();
     store.settings.defaults = defaultsFrom(latest ? store.logs[latest] : template());
   }
+  upgradeDefaults(store.settings.defaults);
+  countUp = true;
   if (/^\d{4}-\d{2}-\d{2}$/.test(params.get('date') || '')) curDate = params.get('date');
   $('#store-tag').textContent = store.settings.storeNo ? ` · Store #${store.settings.storeNo}` : '';
 

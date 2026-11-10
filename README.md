@@ -28,15 +28,19 @@ It then opens in its own window, with its own icon, like any other program. Save
 ## Daily use
 
 1. Open the link. It starts on today's date.
-2. Fill in the sections. Press **Enter** to jump to the next count.
+2. Fill in the sections. Press **Enter** to jump to the next count. Click a section's header to fold it away; a folded section still shows its total or variance.
 3. Enter **Actual sales** from the sales reports to get the variances.
 4. Press **Preview & Print**, staple the TellerMate receipts if you use them, and sign.
 
 ## Settings
 
-- **Store number:** shown in the header and on the printout.
-- **Expected safe float:** used to check typed-in safe counts (default $3,000.00).
-- **Default prices & floats:** stamp, garbage bag and transit prices and the till floats that every new day starts with. A day you've already started keeps its own amounts; change those with **Edit prices** on that day.
+- **General:** store number, expected safe float (default $3,000.00), and whether new days start with TellerMate receipts or typed counts.
+- **Items & prices:** the rows in Stamps, Other and Transit. Add, rename, reorder, price or remove them.
+- **Lottery:** the ticket price points counted in both lottery sections. Add or remove prices.
+- **Floats:** the till floats every new day starts with.
+- **Your data:** backup, import, the demo, and starting over.
+
+New days use these lists. A day you've already started keeps its own, unless you press **Use these items today too** (anything already counted is kept).
 
 ## Where the data is kept
 
@@ -59,3 +63,7 @@ The site is served by GitHub Pages from the `main` branch:
 - If you replace a file in `assets/`, also bump `VERSION` in `sw.js` so installed copies pick it up.
 
 Saved days are not affected by updates.
+
+## Credits
+
+Designed and developed by **Farzad Chatrsimab**.

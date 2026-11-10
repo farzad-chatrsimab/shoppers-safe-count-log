@@ -1,7 +1,7 @@
 /* Offline support for the Safe Count Log.
    The page is fetched fresh when online (so updates show up) and served from the cache when offline.
    Images and fonts come from the cache first. Bump VERSION when a file in assets/ changes. */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = `safe-count-log-${VERSION}`;
 const SHELL = [
   './',
